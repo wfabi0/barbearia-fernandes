@@ -1,0 +1,11 @@
+{
+  "name": "barbearia-fernandes",
+  "scripts": {
+    "dev": "concurrently \"npm:dev-backend\" \"npm:dev-frontend\"",
+    "dev-backend": "cd backend && mvnw spring-boot:run",
+    "dev-frontend": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
