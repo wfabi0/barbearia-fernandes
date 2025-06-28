@@ -15,21 +15,16 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-# Incluir configurações úteis
+# Mantém apenas configs úteis para o projeto
 !.idea/codeStyles
 !.idea/runConfigurations
 !.idea/misc.xml
 !.idea/modules.xml
 
-# Ignorar configurações específicas de usuário
-.idea/workspace.xml
-.idea/usage.statistics.xml
-.idea/dictionaries
-.idea/shelf
-.idea/.name
+# Ignora arquivos de usuário
+.idea/*
+!*.iml
 
-# Ignorar arquivos iml se você usa Maven ou Gradle
-*.iml
 
 ### NetBeans ###
 /nbproject/private/
