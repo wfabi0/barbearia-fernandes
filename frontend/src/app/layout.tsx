@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{ backgroundImage: "url('./bg-50.png')", backgroundSize: "cover" }}>
         <NavBar></NavBar>
-        <main className="">
+        <main>
           {children}
         </main>
         <Footer></Footer>
