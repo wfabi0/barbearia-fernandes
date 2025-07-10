@@ -2,8 +2,8 @@ package com.onebit.barbearia_fernandes.model;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 public class Usuario {
@@ -26,7 +26,7 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "perfil")
-    private TipoUsuario perfil = TipoUsuario.CLIENTE;
+    private String perfil;
 
     @Column(name = "createdAt", updatable = false)
     private LocalDateTime createdat;
@@ -37,7 +37,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long userId, String nomeUsuario, String email, String telefone, String senha, TipoUsuario perfil, LocalDateTime createdat, LocalDateTime updatedAt) {
+    public Usuario(Long userId, String nomeUsuario, String email, String telefone, String senha, String perfil, LocalDateTime createdat, LocalDateTime updatedAt) {
         this.userId = userId;
         this.nomeUsuario = nomeUsuario;
         this.email = email;
@@ -88,11 +88,11 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public TipoUsuario getPerfil() {
+    public String getPerfil() {
         return perfil;
     }
 
-    public void setPerfil(TipoUsuario perfil) {
+    public void setPerfil(String perfil) {
         this.perfil = perfil;
     }
 
