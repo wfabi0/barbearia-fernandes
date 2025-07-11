@@ -5,6 +5,7 @@ import com.onebit.barbearia_fernandes.dto.UserResponseDto;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,14 @@ public class UserService {
 
     @Transactional
     public UserResponseDto saveUsuario(CreateUserDto dto) {
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new DataIntegrityViolationException("O e-mail informado já está sendo usado.");
+        }
+
+        if(userRepository.existsByTelefone(dto.telefone())) {
+            throw new DataIntegrityViolationException("O telefone informado já está sendo usado.");
+        }
+
         Usuario entity = new Usuario();
         entity.setNomeUsuario(dto.nomeUsuario());
         entity.setEmail(dto.email());
