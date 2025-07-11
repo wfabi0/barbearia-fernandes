@@ -1,32 +1,43 @@
 package com.onebit.barbearia_fernandes.service;
 
-import com.onebit.barbearia_fernandes.controller.CreateUserDto;
-import com.onebit.barbearia_fernandes.controller.UserResponseDto;
+import com.onebit.barbearia_fernandes.dto.CreateUserDto;
+import com.onebit.barbearia_fernandes.dto.UserResponseDto;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
 
-    @Autowired
     private final UsuarioRepository userRepository;
 
+    @Autowired
     public UserService(UsuarioRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public UserResponseDto saveUsuario(CreateUserDto dto){
+    @Transactional
+    public UserResponseDto saveUsuario(CreateUserDto dto) {
         Usuario entity = new Usuario();
         entity.setNomeUsuario(dto.nomeUsuario());
         entity.setEmail(dto.email());
         entity.setTelefone(dto.telefone());
         entity.setSenha(dto.senha());
-        entity.setPerfil(dto.perfil());
 
+        Usuario usuario = userRepository.save(entity);
 
-        return new UserResponseDto(entity);
-
+        return toResponseDto(usuario);
     }
+
+    private UserResponseDto toResponseDto(Usuario usuario) {
+        return new UserResponseDto(
+                usuario.getNomeUsuario(),
+                usuario.getEmail(),
+                usuario.getTelefone(),
+                usuario.getPerfil()
+        );
+    }
+
 }

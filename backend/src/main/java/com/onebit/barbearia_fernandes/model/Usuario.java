@@ -1,8 +1,9 @@
 package com.onebit.barbearia_fernandes.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,10 +16,10 @@ public class Usuario {
     @Column(name = "nome")
     private String nomeUsuario;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "telefone")
+    @Column(name = "telefone", unique = true)
     private String telefone;
 
     @Column(name = "senha")
@@ -26,18 +27,20 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "perfil")
-    private String perfil;
+    private PerfilUsuario perfil = PerfilUsuario.CLIENTE;
 
+    @CreationTimestamp
     @Column(name = "createdAt", updatable = false)
     private LocalDateTime createdat;
 
+    @UpdateTimestamp
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
     public Usuario() {
     }
 
-    public Usuario(Long userId, String nomeUsuario, String email, String telefone, String senha, String perfil, LocalDateTime createdat, LocalDateTime updatedAt) {
+    public Usuario(Long userId, String nomeUsuario, String email, String telefone, String senha, PerfilUsuario perfil, LocalDateTime createdat, LocalDateTime updatedAt) {
         this.userId = userId;
         this.nomeUsuario = nomeUsuario;
         this.email = email;
@@ -88,11 +91,11 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public String getPerfil() {
+    public PerfilUsuario getPerfil() {
         return perfil;
     }
 
-    public void setPerfil(String perfil) {
+    public void setPerfil(PerfilUsuario perfil) {
         this.perfil = perfil;
     }
 
@@ -112,14 +115,4 @@ public class Usuario {
         this.updatedAt = updatedAt;
     }
 
-    @PrePersist
-    protected void onCreate(){
-        createdat = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate(){
-        updatedAt = LocalDateTime.now();
-    }
 }
