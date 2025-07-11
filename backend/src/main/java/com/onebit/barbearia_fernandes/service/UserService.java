@@ -5,6 +5,7 @@ import com.onebit.barbearia_fernandes.dto.UserResponseDto;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UsuarioRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UsuarioRepository userRepository) {
+    public UserService(UsuarioRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -24,7 +27,7 @@ public class UserService {
         entity.setNomeUsuario(dto.nomeUsuario());
         entity.setEmail(dto.email());
         entity.setTelefone(dto.telefone());
-        entity.setSenha(dto.senha());
+        entity.setSenha(passwordEncoder.encode(dto.senha()));
 
         Usuario usuario = userRepository.save(entity);
 
@@ -32,12 +35,7 @@ public class UserService {
     }
 
     private UserResponseDto toResponseDto(Usuario usuario) {
-        return new UserResponseDto(
-                usuario.getNomeUsuario(),
-                usuario.getEmail(),
-                usuario.getTelefone(),
-                usuario.getPerfil()
-        );
+        return new UserResponseDto(usuario.getNomeUsuario(), usuario.getEmail(), usuario.getTelefone(), usuario.getPerfil());
     }
 
 }
