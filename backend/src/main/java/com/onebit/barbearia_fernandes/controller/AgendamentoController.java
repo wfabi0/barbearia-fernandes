@@ -1,10 +1,15 @@
 package com.onebit.barbearia_fernandes.controller;
 
 import com.onebit.barbearia_fernandes.dto.AgendamentoCreateDto;
+import com.onebit.barbearia_fernandes.dto.AgendamentoFilter;
+import com.onebit.barbearia_fernandes.dto.AgendamentoPessoalDto;
 import com.onebit.barbearia_fernandes.dto.AgendamentoResponseDto;
 import com.onebit.barbearia_fernandes.service.AgendamentoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +33,24 @@ public class AgendamentoController {
         return new ResponseEntity<>(novoAgendamento, HttpStatus.CREATED);
     }
 
+    // TODO: precisa finalizar a autenticaçao/crud usuario
+    @GetMapping("/me")
+    public ResponseEntity<Page<AgendamentoResponseDto>> buscarMeusAgendamentos(
+            AgendamentoPessoalDto filtro,
+            @PageableDefault(size = 10, sort = "dataHora") Pageable pageable) {
+
+        Long clienteId = 0L;
+        Page<AgendamentoResponseDto> agendamentosPage = agendamentoService.buscarPorCliente(clienteId, filtro, pageable);
+        return ResponseEntity.ok(agendamentosPage);
+    }
+
     @GetMapping
-    public ResponseEntity<List<AgendamentoResponseDto>> listarAgendamentos() {
-        List<AgendamentoResponseDto> agendamentos = agendamentoService.listarTodos();
-        return ResponseEntity.ok(agendamentos);
+    public ResponseEntity<Page<AgendamentoResponseDto>> listarAgendamentos(
+            AgendamentoFilter filter,
+            @PageableDefault(size = 10, sort = "dataHora") Pageable pageable
+    ) {
+        Page<AgendamentoResponseDto> agendamentosPage = agendamentoService.listarAgendamentos(filter, pageable);
+        return ResponseEntity.ok(agendamentosPage);
     }
 
     @GetMapping("/{id}")

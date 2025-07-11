@@ -1,14 +1,21 @@
 package com.onebit.barbearia_fernandes.service;
 
 import com.onebit.barbearia_fernandes.dto.AgendamentoCreateDto;
+import com.onebit.barbearia_fernandes.dto.AgendamentoFilter;
+import com.onebit.barbearia_fernandes.dto.AgendamentoPessoalDto;
 import com.onebit.barbearia_fernandes.dto.AgendamentoResponseDto;
 import com.onebit.barbearia_fernandes.model.Agendamento;
 import com.onebit.barbearia_fernandes.model.StatusAgendamento;
 import com.onebit.barbearia_fernandes.repository.AgendamentoRepository;
-import jakarta.transaction.Transactional;
+import com.onebit.barbearia_fernandes.repository.specification.AgendamentoSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +35,7 @@ public class AgendamentoService {
         validarDisponibilidade(createDto.barbeiroId(), createDto.data_hora());
 
         Agendamento agendamento = new Agendamento();
-        // TODO: pegar por segurança do security com jwt
+        // TODO: pegar o id por segurança do security com jwt
         agendamento.setClienteId(createDto.clientId());
         agendamento.setBarbeiroId(createDto.barbeiroId());
         agendamento.setTipoCorteId(createDto.tipoCorteId());
@@ -39,11 +46,23 @@ public class AgendamentoService {
         return toResponseDto(agendamentoSalvo);
     }
 
-    public List<AgendamentoResponseDto> listarTodos() {
-        return agendamentoRepository.findAll()
-                .stream()
-                .map(this::toResponseDto)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<AgendamentoResponseDto> listarAgendamentos(AgendamentoFilter filter, Pageable pageable) {
+        Specification<Agendamento> spec = AgendamentoSpecification.build(filter);
+        Page<Agendamento> agendamentosPage = agendamentoRepository.findAll(spec, pageable);
+        return agendamentosPage.map(this::toResponseDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AgendamentoResponseDto> buscarPorCliente(Long clienteId, AgendamentoPessoalDto filtroCliente, Pageable pageable) {
+        AgendamentoFilter filtroCompleto = new AgendamentoFilter(
+                filtroCliente.barbeiroId(),
+                clienteId,
+                filtroCliente.status(),
+                filtroCliente.data()
+        );
+        Specification<Agendamento> spec = AgendamentoSpecification.build(filtroCompleto);
+        return agendamentoRepository.findAll(spec, pageable).map(this::toResponseDto);
     }
 
     public AgendamentoResponseDto buscarPorId(Long id) {
