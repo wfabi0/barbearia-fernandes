@@ -6,7 +6,6 @@ import com.onebit.barbearia_fernandes.model.StatusAgendamento;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,25 +29,27 @@ public class AgendamentoSpecification {
         }
 
         if (specs.isEmpty()) {
-            return Specification.not(null);
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
 
         return specs.stream().reduce(Specification::and).get();
     }
 
+    // MÉTODO CORRIGIDO
     private static Specification<Agendamento> comBarbeiroId(Long barbeiroId) {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("barbeiroId"), barbeiroId);
+                criteriaBuilder.equal(root.get("barbeiro").get("userId"), barbeiroId);
     }
 
+    // MÉTODO CORRIGIDO
     private static Specification<Agendamento> comClienteId(Long clienteId) {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("clienteId"), clienteId);
+                criteriaBuilder.equal(root.get("cliente").get("userId"), clienteId);
     }
 
     private static Specification<Agendamento> comStatus(StatusAgendamento statusAgendamento) {
         return (root, query, criteriaBuilder) ->
-            criteriaBuilder.equal(root.get("status"), statusAgendamento);
+                criteriaBuilder.equal(root.get("status"), statusAgendamento);
     }
 
     private static Specification<Agendamento> porData(LocalDate data) {

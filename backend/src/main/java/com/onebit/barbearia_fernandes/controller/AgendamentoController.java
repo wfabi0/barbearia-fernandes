@@ -39,8 +39,8 @@ public class AgendamentoController {
             AgendamentoPessoalDto filtro,
             @PageableDefault(size = 10, sort = "dataHora") Pageable pageable) {
 
-        Long clienteId = 0L;
-        Page<AgendamentoResponseDto> agendamentosPage = agendamentoService.buscarPorCliente(clienteId, filtro, pageable);
+        Long clienteId = 1L;
+        Page<AgendamentoResponseDto> agendamentosPage = agendamentoService.buscarPorIdCliente(clienteId, filtro, pageable);
         return ResponseEntity.ok(agendamentosPage);
     }
 

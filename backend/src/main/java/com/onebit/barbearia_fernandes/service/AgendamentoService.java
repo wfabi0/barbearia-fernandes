@@ -61,7 +61,7 @@ public class AgendamentoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AgendamentoResponseDto> buscarPorCliente(Long clienteId, AgendamentoPessoalDto filtroCliente, Pageable pageable) {
+    public Page<AgendamentoResponseDto> buscarPorIdCliente(Long clienteId, AgendamentoPessoalDto filtroCliente, Pageable pageable) {
         AgendamentoFilter filtroCompleto = new AgendamentoFilter(
                 filtroCliente.barbeiroId(),
                 clienteId,
