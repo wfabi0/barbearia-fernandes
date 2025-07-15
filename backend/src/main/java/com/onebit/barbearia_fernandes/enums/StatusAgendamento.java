@@ -1,4 +1,4 @@
-package com.onebit.barbearia_fernandes.model;
+package com.onebit.barbearia_fernandes.enums;
 
 public enum StatusAgendamento {
     AGENDADO,

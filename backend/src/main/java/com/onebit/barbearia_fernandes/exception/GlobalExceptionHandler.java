@@ -1,18 +1,22 @@
 package com.onebit.barbearia_fernandes.exception;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.validation.FieldError;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -81,4 +85,29 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
+        String mensagem;
+        Throwable causaRaiz = ex.getRootCause();
+
+        if (causaRaiz instanceof InvalidFormatException ife) {
+            String nomeCampo = ife.getPath().stream()
+                    .map(JsonMappingException.Reference::getFieldName)
+                    .collect(Collectors.joining("."));
+            String tipoEsperado = ife.getTargetType().getSimpleName();
+            mensagem = String.format("O campo '%s' possui um formato inválido. O tipo esperado é '%s'.", nomeCampo, tipoEsperado);
+        } else {
+            mensagem = "O corpo da requisição está mal formatado ou é inválido.";
+        }
+
+        Map<String, Object> body = createErrorBody(
+                HttpStatus.BAD_REQUEST,
+                mensagem,
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
 }

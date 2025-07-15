@@ -1,11 +1,10 @@
 package com.onebit.barbearia_fernandes.service;
 
-import com.onebit.barbearia_fernandes.dto.CreateUserDto;
-import com.onebit.barbearia_fernandes.dto.UserResponseDto;
+import com.onebit.barbearia_fernandes.dto.user.CreateUserDto;
+import com.onebit.barbearia_fernandes.dto.user.UserResponseDto;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

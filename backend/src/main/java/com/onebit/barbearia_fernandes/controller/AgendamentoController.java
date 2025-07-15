@@ -1,12 +1,12 @@
 package com.onebit.barbearia_fernandes.controller;
 
-import com.onebit.barbearia_fernandes.dto.AgendamentoCreateDto;
-import com.onebit.barbearia_fernandes.dto.AgendamentoFilter;
-import com.onebit.barbearia_fernandes.dto.AgendamentoPessoalDto;
-import com.onebit.barbearia_fernandes.dto.AgendamentoResponseDto;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoCreateDto;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoFilter;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoPessoalDto;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoResponseDto;
 import com.onebit.barbearia_fernandes.service.AgendamentoService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -14,18 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/agendamentos")
 public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
-
-    @Autowired
-    public AgendamentoController(AgendamentoService agendamentoService) {
-        this.agendamentoService = agendamentoService;
-    }
 
     @PostMapping
     public ResponseEntity<AgendamentoResponseDto> criarAgendamento(@Valid @RequestBody AgendamentoCreateDto createDto) {
