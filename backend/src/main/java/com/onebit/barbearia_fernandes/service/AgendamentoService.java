@@ -6,7 +6,7 @@ import com.onebit.barbearia_fernandes.dto.AgendamentoPessoalDto;
 import com.onebit.barbearia_fernandes.dto.AgendamentoResponseDto;
 import com.onebit.barbearia_fernandes.exception.ResourceNotFoundException;
 import com.onebit.barbearia_fernandes.model.Agendamento;
-import com.onebit.barbearia_fernandes.model.StatusAgendamento;
+import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.AgendamentoRepository;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;

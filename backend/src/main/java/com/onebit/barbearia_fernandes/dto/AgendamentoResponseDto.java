@@ -1,6 +1,6 @@
 package com.onebit.barbearia_fernandes.dto;
 
-import com.onebit.barbearia_fernandes.model.StatusAgendamento;
+import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
 
 import java.time.LocalDateTime;
 

@@ -1,5 +1,6 @@
 package com.onebit.barbearia_fernandes.model;
 
+import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
