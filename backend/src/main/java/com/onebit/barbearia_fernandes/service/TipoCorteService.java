@@ -18,6 +18,8 @@ import java.util.Locale;
 public class TipoCorteService {
 
     private final TipoCorteRepository tipoCorteRepository;
+    private static Locale PT_BR = new Locale("pt", "BR");
+    private static final NumberFormat CURRENCY_FORMATTER = NumberFormat.getCurrencyInstance(PT_BR);
 
     @Transactional
     public TipoCorteResponseDto cadastrarCorte(TipoCorteCreateDto createDto) {
@@ -42,9 +44,7 @@ public class TipoCorteService {
     }
 
     private TipoCorteResponseDto toResponseDto(TipoCorte corte) {
-        Locale ptBr = new Locale("pt", "BR");
-        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(ptBr);
-        String precoFormatted = numberFormat.format(corte.getPreco());
+        String precoFormatted = CURRENCY_FORMATTER.format(corte.getPreco());
 
         return TipoCorteResponseDto.builder()
                 .corteId(corte.getCorteId())
