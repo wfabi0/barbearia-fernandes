@@ -1,4 +1,4 @@
-package com.onebit.barbearia_fernandes.dto;
+package com.onebit.barbearia_fernandes.dto.agendamento;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;

@@ -1,14 +1,17 @@
 package com.onebit.barbearia_fernandes.service;
 
-import com.onebit.barbearia_fernandes.dto.AgendamentoCreateDto;
-import com.onebit.barbearia_fernandes.dto.AgendamentoFilter;
-import com.onebit.barbearia_fernandes.dto.AgendamentoPessoalDto;
-import com.onebit.barbearia_fernandes.dto.AgendamentoResponseDto;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoCreateDto;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoFilter;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoPessoalDto;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoResponseDto;
+import com.onebit.barbearia_fernandes.enums.PerfilUsuario;
+import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
 import com.onebit.barbearia_fernandes.exception.ResourceNotFoundException;
 import com.onebit.barbearia_fernandes.model.Agendamento;
-import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
+import com.onebit.barbearia_fernandes.model.TipoCorte;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.AgendamentoRepository;
+import com.onebit.barbearia_fernandes.repository.TipoCorteRepository;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import com.onebit.barbearia_fernandes.repository.specification.AgendamentoSpecification;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -27,12 +31,20 @@ public class AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final TipoCorteRepository tipoCorteRepository;
 
     @Transactional
     public AgendamentoResponseDto criarAgendamento(AgendamentoCreateDto createDto) {
 
         Usuario cliente = findUsuarioById(createDto.clientId());
         Usuario barbeiro = findUsuarioById(createDto.barbeiroId());
+        if (Objects.equals(cliente.getUserId(), barbeiro.getUserId())) {
+            throw new DataIntegrityViolationException("Cliente e barbeiro não podem ser o mesmo usuário.");
+        }
+        if (barbeiro.getPerfil() != PerfilUsuario.BARBEIRO) {
+            throw new ResourceNotFoundException("Usuário não é um barbeiro: " + barbeiro.getUserId());
+        }
+        TipoCorte tipoCorte = findTipoCorteById(createDto.tipoCorteId());
 
         validarDisponibilidade(barbeiro.getUserId(), createDto.data_hora());
 
@@ -40,7 +52,7 @@ public class AgendamentoService {
         // TODO: pegar o id por segurança do security com jwt
         agendamento.setCliente(cliente);
         agendamento.setBarbeiro(barbeiro);
-        agendamento.setTipoCorteId(createDto.tipoCorteId());
+        agendamento.setTipoCorte(tipoCorte);
         agendamento.setDataHora(createDto.data_hora());
         agendamento.setStatus(StatusAgendamento.AGENDADO);
 
@@ -77,12 +89,13 @@ public class AgendamentoService {
 
         Usuario cliente = findUsuarioById(updateDto.clientId());
         Usuario barbeiro = findUsuarioById(updateDto.barbeiroId());
+        TipoCorte tipoCorte = findTipoCorteById(updateDto.tipoCorteId());
 
         validarDisponibilidade(barbeiro.getUserId(), updateDto.data_hora(), agendamentoId);
 
         agendamentoExistente.setCliente(cliente);
         agendamentoExistente.setBarbeiro(barbeiro);
-        agendamentoExistente.setTipoCorteId(updateDto.tipoCorteId());
+        agendamentoExistente.setTipoCorte(tipoCorte);
         agendamentoExistente.setDataHora(updateDto.data_hora());
 
         Agendamento agendamentoAtualizado = agendamentoRepository.save(agendamentoExistente);
@@ -95,6 +108,11 @@ public class AgendamentoService {
             throw new ResourceNotFoundException("Não foi possível encontrar o agendamento com ID: " + id);
         }
         agendamentoRepository.deleteById(id);
+    }
+
+    private TipoCorte findTipoCorteById(Long tipoCorteId) {
+        return tipoCorteRepository.findById(tipoCorteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de corte não encontrado com ID: " + tipoCorteId));
     }
 
     private void validarDisponibilidade(Long barbeiroId, LocalDateTime dataHora, Long... agendamentoIdParaIgnorar) {
@@ -127,7 +145,7 @@ public class AgendamentoService {
                 agendamento.getAgendamentoId(),
                 agendamento.getCliente().getUserId(),
                 agendamento.getBarbeiro().getUserId(),
-                agendamento.getTipoCorteId(),
+                agendamento.getTipoCorte().getCorteId(),
                 agendamento.getDataHora(),
                 agendamento.getStatus(),
                 agendamento.getCreatedAt()

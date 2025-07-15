@@ -1,4 +1,4 @@
-package com.onebit.barbearia_fernandes.dto;
+package com.onebit.barbearia_fernandes.dto.agendamento;
 
 import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
 

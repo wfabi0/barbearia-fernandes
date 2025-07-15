@@ -2,10 +2,7 @@ package com.onebit.barbearia_fernandes.model;
 
 import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "agendamentoId")
 public class Agendamento {
 
     @Id
@@ -31,8 +29,9 @@ public class Agendamento {
     @JoinColumn(name = "barbeiro_id", referencedColumnName = "userId", nullable = false)
     private Usuario barbeiro;
 
-    @Column(name = "tipo_corteId", nullable = false)
-    private Long tipoCorteId;
+    @ManyToOne
+    @JoinColumn(name = "tipo_corte_id", referencedColumnName = "corteId", nullable = false)
+    private TipoCorte tipoCorte;
 
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora;
@@ -42,9 +41,11 @@ public class Agendamento {
     private StatusAgendamento status;
 
     @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
 }

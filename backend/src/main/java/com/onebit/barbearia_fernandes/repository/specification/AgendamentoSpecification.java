@@ -1,6 +1,6 @@
 package com.onebit.barbearia_fernandes.repository.specification;
 
-import com.onebit.barbearia_fernandes.dto.AgendamentoFilter;
+import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoFilter;
 import com.onebit.barbearia_fernandes.model.Agendamento;
 import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
 import org.springframework.data.jpa.domain.Specification;
