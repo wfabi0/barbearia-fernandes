@@ -29,7 +29,7 @@ public class UserService {
         }
 
         Usuario entity = new Usuario();
-        entity.setNomeUsuario(dto.nomeUsuario());
+        entity.setNomeUsuario(dto.nome());
         entity.setEmail(dto.email());
         entity.setTelefone(dto.telefone());
         entity.setSenha(passwordEncoder.encode(dto.senha()));

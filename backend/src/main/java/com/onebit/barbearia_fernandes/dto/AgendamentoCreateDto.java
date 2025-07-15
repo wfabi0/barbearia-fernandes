@@ -2,9 +2,11 @@ package com.onebit.barbearia_fernandes.dto;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record AgendamentoCreateDto (
         // TODO: lembrar de remover o id do cliente pois sera pelo JWT
         @NotNull(message = "O ID do cliente é obrigatório")

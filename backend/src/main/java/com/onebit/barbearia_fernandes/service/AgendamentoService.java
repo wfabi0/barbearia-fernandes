@@ -4,11 +4,17 @@ import com.onebit.barbearia_fernandes.dto.AgendamentoCreateDto;
 import com.onebit.barbearia_fernandes.dto.AgendamentoFilter;
 import com.onebit.barbearia_fernandes.dto.AgendamentoPessoalDto;
 import com.onebit.barbearia_fernandes.dto.AgendamentoResponseDto;
+import com.onebit.barbearia_fernandes.exception.ResourceNotFoundException;
 import com.onebit.barbearia_fernandes.model.Agendamento;
 import com.onebit.barbearia_fernandes.model.StatusAgendamento;
+import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.AgendamentoRepository;
+import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import com.onebit.barbearia_fernandes.repository.specification.AgendamentoSpecification;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,24 +26,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
-
-    @Autowired
-    public AgendamentoService(AgendamentoRepository agendamentoRepository) {
-        this.agendamentoRepository = agendamentoRepository;
-    }
+    private final UsuarioRepository usuarioRepository;
 
     @Transactional
     public AgendamentoResponseDto criarAgendamento(AgendamentoCreateDto createDto) {
-        validarDisponibilidade(createDto.barbeiroId(), createDto.data_hora());
+
+        Usuario cliente = findUsuarioById(createDto.clientId());
+        Usuario barbeiro = findUsuarioById(createDto.barbeiroId());
+
+        validarDisponibilidade(barbeiro.getUserId(), createDto.data_hora());
 
         Agendamento agendamento = new Agendamento();
         // TODO: pegar o id por segurança do security com jwt
-        agendamento.setClienteId(createDto.clientId());
-        agendamento.setBarbeiroId(createDto.barbeiroId());
+        agendamento.setCliente(cliente);
+        agendamento.setBarbeiro(barbeiro);
         agendamento.setTipoCorteId(createDto.tipoCorteId());
         agendamento.setDataHora(createDto.data_hora());
         agendamento.setStatus(StatusAgendamento.AGENDADO);
@@ -73,10 +80,13 @@ public class AgendamentoService {
     public AgendamentoResponseDto atualizarAgendamento(Long agendamentoId, AgendamentoCreateDto updateDto) {
         Agendamento agendamentoExistente = findAgendamentoById(agendamentoId);
 
-        validarDisponibilidade(updateDto.barbeiroId(), updateDto.data_hora(), agendamentoId);
+        Usuario cliente = findUsuarioById(updateDto.clientId());
+        Usuario barbeiro = findUsuarioById(updateDto.barbeiroId());
 
-        agendamentoExistente.setClienteId(updateDto.clientId());
-        agendamentoExistente.setBarbeiroId(updateDto.barbeiroId());
+        validarDisponibilidade(barbeiro.getUserId(), updateDto.data_hora(), agendamentoId);
+
+        agendamentoExistente.setCliente(cliente);
+        agendamentoExistente.setBarbeiro(barbeiro);
         agendamentoExistente.setTipoCorteId(updateDto.tipoCorteId());
         agendamentoExistente.setDataHora(updateDto.data_hora());
 
@@ -87,7 +97,7 @@ public class AgendamentoService {
     @Transactional
     public void deletarAgendamento(Long id) {
         if (!agendamentoRepository.existsById(id)) {
-            throw new RuntimeException("Não foi possível encontrar o agendamento com ID: " + id);
+            throw new ResourceNotFoundException("Não foi possível encontrar o agendamento com ID: " + id);
         }
         agendamentoRepository.deleteById(id);
     }
@@ -97,25 +107,31 @@ public class AgendamentoService {
         LocalDateTime inicio = dataHora.minusMinutes(44);
         LocalDateTime fim = dataHora.plusMinutes(44);
 
-        agendamentoRepository.findByBarbeiroIdAndDataHoraBetween(barbeiroId, inicio, fim)
+        agendamentoRepository.findByBarbeiro_UserIdAndDataHoraBetween(barbeiroId, inicio, fim)
                 .stream()
                 .filter(agendamento -> agendamentoIdParaIgnorar.length == 0 || !agendamento.getAgendamentoId().equals(agendamentoIdParaIgnorar[0]))
                 .findFirst()
                 .ifPresent(agendamento -> {
-                    throw new RuntimeException("O barbeiro já possui agendamento nesse horário.");
+                    throw new DataIntegrityViolationException("O barbeiro já possui agendamento nesse horário.");
                 });
+    }
+
+    private Usuario findUsuarioById(Long id) {
+        return usuarioRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(("Usuário pelo ID " + id + " não encontrado."))
+        );
     }
 
     private Agendamento findAgendamentoById(Long id) {
         return agendamentoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Agendamento não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado com ID: " + id));
     }
 
     private AgendamentoResponseDto toResponseDto(Agendamento agendamento) {
         return new AgendamentoResponseDto(
                 agendamento.getAgendamentoId(),
-                agendamento.getClienteId(),
-                agendamento.getBarbeiroId(),
+                agendamento.getCliente().getUserId(),
+                agendamento.getBarbeiro().getUserId(),
                 agendamento.getTipoCorteId(),
                 agendamento.getDataHora(),
                 agendamento.getStatus(),

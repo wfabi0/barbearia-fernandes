@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Table(name = "usuario")
 @Entity
 @Getter
 @Setter

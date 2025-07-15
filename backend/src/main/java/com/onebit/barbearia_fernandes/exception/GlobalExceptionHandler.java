@@ -3,9 +3,12 @@ package com.onebit.barbearia_fernandes.exception;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.validation.FieldError;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -23,6 +26,29 @@ public class GlobalExceptionHandler {
         body.put("path", path);
         return body;
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
+            String fieldName;
+            if (error instanceof FieldError) {
+                fieldName = ((FieldError) error).getField();
+            } else {
+                fieldName = error.getObjectName();
+            }
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        }
+        Map<String, Object> body = createErrorBody(
+                HttpStatus.BAD_REQUEST,
+                "Erro de validação nos campos fornecidos.",
+                request.getDescription(false).replace("uri=", "")
+        );
+        body.put("validationErrors", errors);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
@@ -46,6 +72,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
+        System.err.println("Erro inesperado no servidor: " + ex.getMessage());
+        ex.printStackTrace();
         Map<String, Object> body = createErrorBody(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.",
@@ -53,5 +81,4 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }
