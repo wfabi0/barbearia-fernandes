@@ -11,9 +11,7 @@ import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.AgendamentoRepository;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import com.onebit.barbearia_fernandes.repository.specification.AgendamentoSpecification;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
