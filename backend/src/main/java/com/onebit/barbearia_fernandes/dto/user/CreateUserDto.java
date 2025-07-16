@@ -13,7 +13,7 @@ public record CreateUserDto(
         String nome,
 
         @NotBlank(message = "O email é obrigatório.")
-        @Email
+        @Email(message = "O email deve ser válido.")
         String email,
 
         @NotBlank(message = "O telefone é obrigatório.")
