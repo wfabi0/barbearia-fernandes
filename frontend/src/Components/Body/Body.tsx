@@ -40,7 +40,7 @@ export default function Body({children,}: Readonly<{ children: React.ReactNode;}
             }
         >
             <NavBar></NavBar>
-            <main className="w-full">
+            <main className="w-full min-h-screen">
                 {children}
             </main>
             <Footer></Footer>
