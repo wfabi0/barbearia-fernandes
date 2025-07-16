@@ -3,7 +3,6 @@ package com.onebit.barbearia_fernandes.service;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
