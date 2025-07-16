@@ -39,7 +39,12 @@ public class UserService {
     }
 
     private UserResponseDto toResponseDto(Usuario usuario) {
-        return new UserResponseDto(usuario.getNomeUsuario(), usuario.getEmail(), usuario.getTelefone(), usuario.getPerfil());
+        return new UserResponseDto(
+                usuario.getNomeUsuario(),
+                usuario.getEmail(),
+                usuario.getTelefone(),
+                usuario.getPerfil()
+        );
     }
 
 }

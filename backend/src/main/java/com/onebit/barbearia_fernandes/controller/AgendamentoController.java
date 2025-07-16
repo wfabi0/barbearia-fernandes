@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -22,8 +24,11 @@ public class AgendamentoController {
     private final AgendamentoService agendamentoService;
 
     @PostMapping
-    public ResponseEntity<AgendamentoResponseDto> criarAgendamento(@Valid @RequestBody AgendamentoCreateDto createDto) {
-        AgendamentoResponseDto novoAgendamento = agendamentoService.criarAgendamento(createDto);
+    public ResponseEntity<AgendamentoResponseDto> criarAgendamento(
+            @Valid @RequestBody AgendamentoCreateDto createDto,
+            Authentication authentication
+    ) {
+        AgendamentoResponseDto novoAgendamento = agendamentoService.criarAgendamento(createDto, authentication);
         return new ResponseEntity<>(novoAgendamento, HttpStatus.CREATED);
     }
 
@@ -54,8 +59,12 @@ public class AgendamentoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AgendamentoResponseDto> atualizarAgendamento(@PathVariable Long id, @Valid @RequestBody AgendamentoCreateDto updateDto) {
-        AgendamentoResponseDto agendamentoAtualizado = agendamentoService.atualizarAgendamento(id, updateDto);
+    public ResponseEntity<AgendamentoResponseDto> atualizarAgendamento(
+            @PathVariable Long id,
+            @Valid @RequestBody AgendamentoCreateDto updateDto,
+            Authentication authentication
+    ) {
+        AgendamentoResponseDto agendamentoAtualizado = agendamentoService.atualizarAgendamento(id, updateDto, authentication);
         return ResponseEntity.ok(agendamentoAtualizado);
     }
 
