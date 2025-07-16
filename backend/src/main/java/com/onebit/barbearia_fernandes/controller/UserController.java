@@ -5,6 +5,7 @@ import com.onebit.barbearia_fernandes.dto.user.UserResponseDto;
 import com.onebit.barbearia_fernandes.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
+    @PreAuthorize("hasRole('BARBEIRO')")
     public UserResponseDto saveUsuario(
             @Valid @RequestBody CreateUserDto createUserDto,
             Authentication authentication

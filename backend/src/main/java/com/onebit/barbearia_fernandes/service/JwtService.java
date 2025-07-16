@@ -36,6 +36,7 @@ public class JwtService {
 
     private String buildToken(UserDetails userDetails, long expiration) {
         return Jwts.builder()
+                .issuer("barbearia-fernandes")
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
