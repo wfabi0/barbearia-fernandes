@@ -24,7 +24,6 @@ public class AgendamentoController {
     private final AgendamentoService agendamentoService;
 
     @PostMapping
-//    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<AgendamentoResponseDto> criarAgendamento(
             @Valid @RequestBody AgendamentoCreateDto createDto,
             Authentication authentication
@@ -69,7 +68,6 @@ public class AgendamentoController {
     }
 
     // Rotas /me
-
     @GetMapping("/me")
     public ResponseEntity<Page<AgendamentoResponseDto>> buscarMeusAgendamentos(
             AgendamentoPessoalDto filtro,
