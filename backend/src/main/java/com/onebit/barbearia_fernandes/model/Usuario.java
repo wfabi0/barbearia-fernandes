@@ -1,5 +1,6 @@
 package com.onebit.barbearia_fernandes.model;
 
+import com.onebit.barbearia_fernandes.enums.PerfilUsuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Table(name = "usuario")
 @Entity
 @Getter
 @Setter
@@ -38,11 +40,11 @@ public class Usuario {
     private PerfilUsuario perfil = PerfilUsuario.CLIENTE;
 
     @CreationTimestamp
-    @Column(name = "createdAt", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updatedAt")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
 }

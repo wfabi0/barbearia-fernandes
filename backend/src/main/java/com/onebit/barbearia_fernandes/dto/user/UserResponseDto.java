@@ -1,11 +1,11 @@
-package com.onebit.barbearia_fernandes.dto;
+package com.onebit.barbearia_fernandes.dto.user;
 
-import com.onebit.barbearia_fernandes.model.PerfilUsuario;
+import com.onebit.barbearia_fernandes.enums.PerfilUsuario;
 import lombok.Builder;
 
 @Builder
 public record UserResponseDto(
-        String nomeUsuario,
+        String nome,
         String email,
         String telefone,
         PerfilUsuario perfil
