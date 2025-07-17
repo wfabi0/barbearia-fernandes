@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,27 +45,12 @@ public class AgendamentoController {
         return new ResponseEntity<>(novoAgendamento, HttpStatus.CREATED);
     }
 
-    // TODO: precisa finalizar a autenticaçao/crud usuario
-    @GetMapping("/me")
-    @Operation(summary = "Buscar Meus Agendamentos", description = "Busca os agendamentos do usuário autenticado. O usuário deve estar autenticado.")
-    @ApiResponse(responseCode = "200", description = "Lista de agendamentos do usuário autenticado.")
-    @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
-    @ApiResponse(responseCode = "403", description = "Usuário não autorizado a acessar seus agendamentos.")
-    @ApiResponse(responseCode = "500", description = "Erro interno do servidor ao buscar agendamentos.")
-    public ResponseEntity<Page<AgendamentoResponseDto>> buscarMeusAgendamentos(
-            AgendamentoPessoalDto filtro,
-            @PageableDefault(size = 10, sort = "dataHora") Pageable pageable) {
-
-        Long clienteId = 1L;
-        Page<AgendamentoResponseDto> agendamentosPage = agendamentoService.buscarPorIdCliente(clienteId, filtro, pageable);
-        return ResponseEntity.ok(agendamentosPage);
-    }
-
     @GetMapping
     @Operation(summary = "Listar Agendamentos", description = "Lista todos os agendamentos com base nos filtros fornecidos.")
     @ApiResponse(responseCode = "200", description = "Lista de agendamentos retornada com sucesso.")
     @ApiResponse(responseCode = "400", description = "Filtros inválidos fornecidos.")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor ao listar agendamentos.")
+    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<Page<AgendamentoResponseDto>> listarAgendamentos(
             AgendamentoFilter filter,
             @PageableDefault(size = 10, sort = "dataHora") Pageable pageable
@@ -78,6 +64,7 @@ public class AgendamentoController {
     @ApiResponse(responseCode = "200", description = "Agendamento encontrado com sucesso.")
     @ApiResponse(responseCode = "404", description = "Agendamento não encontrado.")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor ao buscar agendamento.")
+    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<AgendamentoResponseDto> buscarAgendamentoPorId(@PathVariable Long id) {
         AgendamentoResponseDto agendamento = agendamentoService.buscarPorId(id);
         return ResponseEntity.ok(agendamento);
@@ -89,6 +76,7 @@ public class AgendamentoController {
     @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos.")
     @ApiResponse(responseCode = "404", description = "Agendamento não encontrado.")
     @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
+    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<AgendamentoResponseDto> atualizarAgendamento(
             @PathVariable Long id,
             @Valid @RequestBody AgendamentoCreateDto updateDto,
@@ -105,9 +93,26 @@ public class AgendamentoController {
     @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
     @ApiResponse(responseCode = "403", description = "Usuário não autorizado a deletar agendamentos.")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor ao deletar agendamento.")
+    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<Void> deletarAgendamento(@PathVariable Long id) {
         agendamentoService.deletarAgendamento(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Rotas /me
+    @GetMapping("/me")
+    @Operation(summary = "Buscar Meus Agendamentos", description = "Busca os agendamentos do usuário autenticado. O usuário deve estar autenticado.")
+    @ApiResponse(responseCode = "200", description = "Lista de agendamentos do usuário autenticado.")
+    @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
+    @ApiResponse(responseCode = "403", description = "Usuário não autorizado a acessar seus agendamentos.")
+    @ApiResponse(responseCode = "500", description = "Erro interno do servidor ao buscar agendamentos.")
+    public ResponseEntity<Page<AgendamentoResponseDto>> buscarMeusAgendamentos(
+            AgendamentoPessoalDto filtro,
+            @PageableDefault(size = 10, sort = "dataHora") Pageable pageable,
+            Authentication authentication
+    ) {
+        Page<AgendamentoResponseDto> agendamentosPage = agendamentoService.buscarPorIdCliente(filtro, pageable, authentication);
+        return ResponseEntity.ok(agendamentosPage);
     }
 
 }
