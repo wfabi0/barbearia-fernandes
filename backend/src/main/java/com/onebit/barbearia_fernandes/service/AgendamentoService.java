@@ -39,7 +39,6 @@ public class AgendamentoService {
             AgendamentoCreateDto createDto,
             Authentication authentication
     ) {
-
         String email = authentication.getName();
 
         Usuario cliente = findUsuarioByEmail(email);
@@ -76,10 +75,16 @@ public class AgendamentoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AgendamentoResponseDto> buscarPorIdCliente(Long clienteId, AgendamentoPessoalDto filtroCliente, Pageable pageable) {
+    public Page<AgendamentoResponseDto> buscarPorIdCliente(
+            AgendamentoPessoalDto filtroCliente,
+            Pageable pageable,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+        Usuario cliente = findUsuarioByEmail(email);
         AgendamentoFilter filtroCompleto = new AgendamentoFilter(
                 filtroCliente.barbeiroId(),
-                clienteId,
+                cliente.getUserId(),
                 filtroCliente.status(),
                 filtroCliente.data()
         );

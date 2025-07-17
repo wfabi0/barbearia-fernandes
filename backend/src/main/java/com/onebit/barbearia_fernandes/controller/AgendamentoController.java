@@ -24,6 +24,7 @@ public class AgendamentoController {
     private final AgendamentoService agendamentoService;
 
     @PostMapping
+//    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<AgendamentoResponseDto> criarAgendamento(
             @Valid @RequestBody AgendamentoCreateDto createDto,
             Authentication authentication
@@ -32,18 +33,8 @@ public class AgendamentoController {
         return new ResponseEntity<>(novoAgendamento, HttpStatus.CREATED);
     }
 
-    // TODO: precisa finalizar a autenticaçao/crud usuario
-    @GetMapping("/me")
-    public ResponseEntity<Page<AgendamentoResponseDto>> buscarMeusAgendamentos(
-            AgendamentoPessoalDto filtro,
-            @PageableDefault(size = 10, sort = "dataHora") Pageable pageable) {
-
-        Long clienteId = 1L;
-        Page<AgendamentoResponseDto> agendamentosPage = agendamentoService.buscarPorIdCliente(clienteId, filtro, pageable);
-        return ResponseEntity.ok(agendamentosPage);
-    }
-
     @GetMapping
+    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<Page<AgendamentoResponseDto>> listarAgendamentos(
             AgendamentoFilter filter,
             @PageableDefault(size = 10, sort = "dataHora") Pageable pageable
@@ -53,12 +44,14 @@ public class AgendamentoController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<AgendamentoResponseDto> buscarAgendamentoPorId(@PathVariable Long id) {
         AgendamentoResponseDto agendamento = agendamentoService.buscarPorId(id);
         return ResponseEntity.ok(agendamento);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<AgendamentoResponseDto> atualizarAgendamento(
             @PathVariable Long id,
             @Valid @RequestBody AgendamentoCreateDto updateDto,
@@ -69,9 +62,22 @@ public class AgendamentoController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('BARBEIRO')")
     public ResponseEntity<Void> deletarAgendamento(@PathVariable Long id) {
         agendamentoService.deletarAgendamento(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Rotas /me
+
+    @GetMapping("/me")
+    public ResponseEntity<Page<AgendamentoResponseDto>> buscarMeusAgendamentos(
+            AgendamentoPessoalDto filtro,
+            @PageableDefault(size = 10, sort = "dataHora") Pageable pageable,
+            Authentication authentication
+    ) {
+        Page<AgendamentoResponseDto> agendamentosPage = agendamentoService.buscarPorIdCliente(filtro, pageable, authentication);
+        return ResponseEntity.ok(agendamentosPage);
     }
 
 }
