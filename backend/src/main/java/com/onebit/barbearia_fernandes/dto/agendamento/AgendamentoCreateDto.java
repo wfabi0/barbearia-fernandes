@@ -8,10 +8,6 @@ import java.time.LocalDateTime;
 
 @Builder
 public record AgendamentoCreateDto(
-        // TODO: lembrar de remover o id do cliente pois sera pelo JWT
-        @NotNull(message = "O ID do cliente é obrigatório")
-        Long clientId,
-
         @NotNull(message = "O ID do barbeiro é obrigatório")
         Long barbeiroId,
 

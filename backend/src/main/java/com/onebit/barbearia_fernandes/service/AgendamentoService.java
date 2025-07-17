@@ -19,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,22 +35,28 @@ public class AgendamentoService {
     private final TipoCorteRepository tipoCorteRepository;
 
     @Transactional
-    public AgendamentoResponseDto criarAgendamento(AgendamentoCreateDto createDto) {
+    public AgendamentoResponseDto criarAgendamento(
+            AgendamentoCreateDto createDto,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
 
-        Usuario cliente = findUsuarioById(createDto.clientId());
+        Usuario cliente = findUsuarioByEmail(email);
         Usuario barbeiro = findUsuarioById(createDto.barbeiroId());
+
+        if (barbeiro.getPerfil() != PerfilUsuario.BARBEIRO) {
+            throw new ResourceNotFoundException("Usuário " + barbeiro.getUserId() + " não é um barbeiro.");
+        }
+
         if (Objects.equals(cliente.getUserId(), barbeiro.getUserId())) {
             throw new DataIntegrityViolationException("Cliente e barbeiro não podem ser o mesmo usuário.");
         }
-        if (barbeiro.getPerfil() != PerfilUsuario.BARBEIRO) {
-            throw new ResourceNotFoundException("Usuário não é um barbeiro: " + barbeiro.getUserId());
-        }
+
         TipoCorte tipoCorte = findTipoCorteById(createDto.tipoCorteId());
 
         validarDisponibilidade(barbeiro.getUserId(), createDto.data_hora());
 
         Agendamento agendamento = new Agendamento();
-        // TODO: pegar o id por segurança do security com jwt
         agendamento.setCliente(cliente);
         agendamento.setBarbeiro(barbeiro);
         agendamento.setTipoCorte(tipoCorte);
@@ -68,10 +75,16 @@ public class AgendamentoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AgendamentoResponseDto> buscarPorIdCliente(Long clienteId, AgendamentoPessoalDto filtroCliente, Pageable pageable) {
+    public Page<AgendamentoResponseDto> buscarPorIdCliente(
+            AgendamentoPessoalDto filtroCliente,
+            Pageable pageable,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+        Usuario cliente = findUsuarioByEmail(email);
         AgendamentoFilter filtroCompleto = new AgendamentoFilter(
                 filtroCliente.barbeiroId(),
-                clienteId,
+                cliente.getUserId(),
                 filtroCliente.status(),
                 filtroCliente.data()
         );
@@ -84,10 +97,15 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public AgendamentoResponseDto atualizarAgendamento(Long agendamentoId, AgendamentoCreateDto updateDto) {
+    public AgendamentoResponseDto atualizarAgendamento(
+            Long agendamentoId, AgendamentoCreateDto updateDto,
+            Authentication authentication
+    ) {
         Agendamento agendamentoExistente = findAgendamentoById(agendamentoId);
 
-        Usuario cliente = findUsuarioById(updateDto.clientId());
+        String email = authentication.getName();
+
+        Usuario cliente = findUsuarioByEmail(email);
         Usuario barbeiro = findUsuarioById(updateDto.barbeiroId());
         TipoCorte tipoCorte = findTipoCorteById(updateDto.tipoCorteId());
 
@@ -110,11 +128,13 @@ public class AgendamentoService {
         agendamentoRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     private TipoCorte findTipoCorteById(Long tipoCorteId) {
         return tipoCorteRepository.findById(tipoCorteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de corte não encontrado com ID: " + tipoCorteId));
     }
 
+    @Transactional(readOnly = true)
     private void validarDisponibilidade(Long barbeiroId, LocalDateTime dataHora, Long... agendamentoIdParaIgnorar) {
         // TODO: relacionar com o tipoCabelo para fazer o calculo (Cabelo, Barba, Pezinho, Colorir, Sobrancelha)
         LocalDateTime inicio = dataHora.minusMinutes(44);
@@ -129,12 +149,20 @@ public class AgendamentoService {
                 });
     }
 
+    @Transactional(readOnly = true)
     private Usuario findUsuarioById(Long id) {
         return usuarioRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(("Usuário pelo ID " + id + " não encontrado."))
         );
     }
 
+    @Transactional(readOnly = true)
+    private Usuario findUsuarioByEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com email: " + email));
+    }
+
+    @Transactional(readOnly = true)
     private Agendamento findAgendamentoById(Long id) {
         return agendamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado com ID: " + id));
