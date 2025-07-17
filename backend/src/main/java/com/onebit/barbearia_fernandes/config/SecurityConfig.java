@@ -1,8 +1,14 @@
-package com.onebit.barbearia_fernandes.security;
+package com.onebit.barbearia_fernandes.config;
 
 import com.onebit.barbearia_fernandes.exception.CustomAccessDeniedHandler;
 import com.onebit.barbearia_fernandes.exception.CustomAuthenticationEntryPoint;
+import com.onebit.barbearia_fernandes.security.JwtAuthenticationFilter;
 import com.onebit.barbearia_fernandes.service.CustomUserDetailsService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,12 +32,27 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfiguration {
+@OpenAPIDefinition(
+        info = @Info(
+                title = "Barbearia Fernandes API",
+                version = "1.0",
+                description = "API para gerenciamento de agendamentos, serviços e clientes da Barbearia Fernandes"
+        )
+)
+@SecurityScheme(
+        name = SecurityConfig.SECURITY,
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "bearer"
+)
+@SecurityRequirement(name = SecurityConfig.SECURITY)
+public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    public static final String SECURITY = "bearerAuth";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,6 +62,12 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/cortes").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "swagger-ui/**",
+                                "swagger-ui.html",
+                                "/docs/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception ->

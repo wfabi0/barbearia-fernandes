@@ -6,8 +6,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -78,9 +76,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
-        if (ex instanceof AccessDeniedException || ex instanceof AuthenticationException) {
-            throw (RuntimeException) ex;
-        }
         System.err.println("Erro inesperado no servidor: " + ex.getMessage());
         ex.printStackTrace();
         Map<String, Object> body = createErrorBody(
