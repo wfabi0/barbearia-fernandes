@@ -22,6 +22,11 @@ function validateStrongPassword(password: string): PasswordValidationResult {
     };
 }
 
+function validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 
 const RegisterForm: React.FC = () => {
     const [name, setName] = useState<string>('');
@@ -32,9 +37,17 @@ const RegisterForm: React.FC = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
-
+    const [emailError, setEmailError] = useState<string>('');
     const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
     const [confirmPasswordError, setConfirmPasswordError] = useState<string>('');
+
+    useEffect(() => {
+        if (email && !validateEmail(email)) {
+            setEmailError('Por favor, insira um email válido.');
+        } else {
+            setEmailError('');
+        }
+    }, [email]);
 
     useEffect(() => {
         if (password) {
@@ -140,6 +153,9 @@ const RegisterForm: React.FC = () => {
                             <input type="email" id="email" className="flex-grow border-black p-2 focus:outline-none border-0" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Digite seu email' required />
                         </div>
                         <hr className='w-full text-black' />
+                        {emailError && (
+                            <p className="mt-2 px-2 text-sm text-red-600">{emailError}</p>
+                        )}
                     </div>
                     <div>
                         <div className="flex items-center w-full">

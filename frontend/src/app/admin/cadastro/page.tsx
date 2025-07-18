@@ -19,6 +19,11 @@ function validateStrongPassword(password: string): PasswordValidationResult {
     return { isValid: errors.length === 0, errors };
 }
 
+function validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 const RegisterForm: React.FC = () => {
 
     const [name, setName] = useState<string>('');
@@ -33,8 +38,17 @@ const RegisterForm: React.FC = () => {
     const [userTypeSearch, setUserTypeSearch] = useState<string>('0');
     const [dataSearch, setDataSearch] = useState<string>('');
 
+    const [emailError, setEmailError] = useState<string>('');
     const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
     const [confirmPasswordError, setConfirmPasswordError] = useState<string>('');
+
+    useEffect(() => {
+        if (email && !validateEmail(email)) {
+            setEmailError('Por favor, insira um email válido.');
+        } else {
+            setEmailError('');
+        }
+    }, [email]);
 
     useEffect(() => {
         if (password) {
@@ -160,6 +174,9 @@ const RegisterForm: React.FC = () => {
                             <div>
                                 <label htmlFor="email" className="block text-sm sm:text-base uppercase font-extrabold mb-1">Email: </label>
                                 <input type="email" id="email" className="w-full border-b-2 border-gray-300 p-2 focus:outline-none focus:border-[#492004]" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Digite seu email' required />
+                                {emailError && (
+                                    <p className="mt-2 px-2 text-sm text-red-600">{emailError}</p>
+                                )}
                             </div>
                             <div>
                                 <label htmlFor="usertype" className="block text-sm sm:text-base uppercase font-extrabold mb-1">Tipo de Usuario: </label>
