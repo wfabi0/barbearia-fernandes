@@ -74,7 +74,7 @@ public class ComentarioService {
         }
 
         Page<Comentario> comentarios = comentarioRepository.findByCliente_UserId(usuarioLogado.getUserId(), pageable);
-        System.out.println(comentarios.getSize());
+
         return comentarios.map(this::toResponseDto);
     }
 
@@ -99,15 +99,26 @@ public class ComentarioService {
 
     @Transactional(readOnly = true)
     public Page<ComentarioReponseDto> listarPorBarbeiro(Long barbeiroId, Pageable pageable) {
-        if (!usuarioRepository.existsById(barbeiroId)) {
-            throw new ResourceNotFoundException("Barbeiro não encontrado com o ID: " + barbeiroId);
+        Usuario barbeiro = usuarioRepository.findById(barbeiroId)
+                .orElseThrow(() -> new ResourceNotFoundException("Barbeiro não encontrado com o ID: " + barbeiroId));
+
+        if (!barbeiro.getPerfil().equals(PerfilUsuario.BARBEIRO)) {
+            throw new BusinessRuleException("O usuário informado não é um barbeiro.");
         }
+
         Page<Comentario> comentarios = comentarioRepository.findByBarbeiro_UserId(barbeiroId, pageable);
         return comentarios.map(this::toResponseDto);
     }
 
     @Transactional
     public void deletarComentario(Long comentarioId, Authentication authentication) {
+        if (comentarioId == null) {
+            throw new BusinessRuleException("O ID do comentário não pode ser nulo.");
+        }
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new BusinessRuleException("Usuário não autenticado.");
+        }
+
         String emailClienteLogado = authentication.getName();
         Usuario usuarioLogado = findUsuarioByEmail(emailClienteLogado);
 
@@ -122,7 +133,6 @@ public class ComentarioService {
 
         comentarioRepository.delete(comentario);
     }
-
 
     private Agendamento findAgendamentoById(Long id) {
         return agendamentoRepository.findById(id)

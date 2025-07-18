@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +55,21 @@ public class ComentarioController {
     ) {
         Page<ComentarioReponseDto> comentarios = comentarioService.listarComentariosPorAutenticacao(authentication, pageable);
         return ResponseEntity.ok(comentarios);
+    }
+
+    @DeleteMapping("/{comentarioId}")
+    @Operation(summary = "Deletar Comentário", description = "Deleta um comentário específico. O usuário deve ser o autor do comentário ou ter perfil de BARBEIRO.")
+    @ApiResponse(responseCode = "204", description = "Comentário deletado com sucesso.")
+    @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
+    @ApiResponse(responseCode = "403", description = "Usuário não autorizado a deletar este comentário.")
+    @ApiResponse(responseCode = "404", description = "Comentário não encontrado.")
+    @ApiResponse(responseCode = "500", description = "Erro interno do servidor ao deletar comentário.")
+    public ResponseEntity<Void> deletarComentario(
+            @PathVariable Long comentarioId,
+            Authentication authentication
+    ) {
+        comentarioService.deletarComentario(comentarioId, authentication);
+        return ResponseEntity.noContent().build();
     }
 
 
