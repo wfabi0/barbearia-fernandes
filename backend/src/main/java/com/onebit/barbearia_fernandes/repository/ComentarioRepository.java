@@ -15,4 +15,6 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
     );
 
     Page<Comentario> findByBarbeiro_UserId(Long barbeiroId, Pageable pageable);
+
+    Page<Comentario> findByCliente_UserId(Long userId, Pageable pageable);
 }

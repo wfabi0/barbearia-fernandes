@@ -64,6 +64,20 @@ public class ComentarioService {
         return toResponseDto(novoComentario);
     }
 
+    @Transactional(readOnly = true)
+    public Page<ComentarioReponseDto> listarComentariosPorAutenticacao(Authentication authentication, Pageable pageable) {
+        String emailClienteLogado = authentication.getName();
+        Usuario usuarioLogado = findUsuarioByEmail(emailClienteLogado);
+
+        if (usuarioLogado.getPerfil().equals(PerfilUsuario.BARBEIRO)) {
+            return listarPorBarbeiro(usuarioLogado.getUserId(), pageable);
+        }
+
+        Page<Comentario> comentarios = comentarioRepository.findByCliente_UserId(usuarioLogado.getUserId(), pageable);
+        System.out.println(comentarios.getSize());
+        return comentarios.map(this::toResponseDto);
+    }
+
     private ComentarioReponseDto toResponseDto(Comentario comentario) {
         return new ComentarioReponseDto(
                 comentario.getComentarioId(),
