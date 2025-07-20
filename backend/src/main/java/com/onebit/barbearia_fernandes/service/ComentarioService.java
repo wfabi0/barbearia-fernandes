@@ -1,7 +1,7 @@
 package com.onebit.barbearia_fernandes.service;
 
 import com.onebit.barbearia_fernandes.dto.comentario.ComentarioCreateDto;
-import com.onebit.barbearia_fernandes.dto.comentario.ComentarioReponseDto;
+import com.onebit.barbearia_fernandes.dto.comentario.ComentarioResponseDto;
 import com.onebit.barbearia_fernandes.dto.user.UserResumeResponseDto;
 import com.onebit.barbearia_fernandes.enums.PerfilUsuario;
 import com.onebit.barbearia_fernandes.enums.StatusAgendamento;
@@ -31,7 +31,7 @@ public class ComentarioService {
     private final UsuarioRepository usuarioRepository;
 
     @Transactional
-    public ComentarioReponseDto criarComentario(
+    public ComentarioResponseDto criarComentario(
             ComentarioCreateDto dto,
             Authentication authentication
     ) {
@@ -65,7 +65,7 @@ public class ComentarioService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ComentarioReponseDto> listarComentariosPorAutenticacao(Authentication authentication, Pageable pageable) {
+    public Page<ComentarioResponseDto> listarComentariosPorAutenticacao(Authentication authentication, Pageable pageable) {
         String emailClienteLogado = authentication.getName();
         Usuario usuarioLogado = findUsuarioByEmail(emailClienteLogado);
 
@@ -78,8 +78,8 @@ public class ComentarioService {
         return comentarios.map(this::toResponseDto);
     }
 
-    private ComentarioReponseDto toResponseDto(Comentario comentario) {
-        return new ComentarioReponseDto(
+    private ComentarioResponseDto toResponseDto(Comentario comentario) {
+        return new ComentarioResponseDto(
                 comentario.getComentarioId(),
                 comentario.getAgendamento().getAgendamentoId(),
                 new UserResumeResponseDto(
@@ -98,7 +98,7 @@ public class ComentarioService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ComentarioReponseDto> listarPorBarbeiro(Long barbeiroId, Pageable pageable) {
+    public Page<ComentarioResponseDto> listarPorBarbeiro(Long barbeiroId, Pageable pageable) {
         Usuario barbeiro = usuarioRepository.findById(barbeiroId)
                 .orElseThrow(() -> new ResourceNotFoundException("Barbeiro não encontrado com o ID: " + barbeiroId));
 

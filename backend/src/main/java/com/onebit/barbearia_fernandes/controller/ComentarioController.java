@@ -1,7 +1,7 @@
 package com.onebit.barbearia_fernandes.controller;
 
 import com.onebit.barbearia_fernandes.dto.comentario.ComentarioCreateDto;
-import com.onebit.barbearia_fernandes.dto.comentario.ComentarioReponseDto;
+import com.onebit.barbearia_fernandes.dto.comentario.ComentarioResponseDto;
 import com.onebit.barbearia_fernandes.service.ComentarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,11 +35,11 @@ public class ComentarioController {
     @ApiResponse(responseCode = "403", description = "Usuário não autorizado a criar comentários.")
     @ApiResponse(responseCode = "404", description = "Agendamento não encontrado ou não concluído.")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor ao criar comentário.")
-    public ResponseEntity<ComentarioReponseDto> criarComentario(
+    public ResponseEntity<ComentarioResponseDto> criarComentario(
             @Valid @RequestBody ComentarioCreateDto dto,
             Authentication authentication
     ) {
-        ComentarioReponseDto response = comentarioService.criarComentario(dto, authentication);
+        ComentarioResponseDto response = comentarioService.criarComentario(dto, authentication);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -49,11 +49,11 @@ public class ComentarioController {
     @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
     @ApiResponse(responseCode = "403", description = "Usuário não autorizado a listar comentários.")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor ao listar comentários.")
-    public ResponseEntity<Page<ComentarioReponseDto>> listarComentarios(
+    public ResponseEntity<Page<ComentarioResponseDto>> listarComentarios(
             @PageableDefault(size = 10) Pageable pageable,
             Authentication authentication
     ) {
-        Page<ComentarioReponseDto> comentarios = comentarioService.listarComentariosPorAutenticacao(authentication, pageable);
+        Page<ComentarioResponseDto> comentarios = comentarioService.listarComentariosPorAutenticacao(authentication, pageable);
         return ResponseEntity.ok(comentarios);
     }
 

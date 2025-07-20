@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record ComentarioReponseDto(
+public record ComentarioResponseDto(
         Long comentarioId,
         Long agendamentoId,
         UserResumeResponseDto cliente,
