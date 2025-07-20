@@ -134,16 +134,19 @@ public class ComentarioService {
         comentarioRepository.delete(comentario);
     }
 
+    @Transactional(readOnly = true)
     private Agendamento findAgendamentoById(Long id) {
         return agendamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado com o ID: " + id));
     }
 
+    @Transactional(readOnly = true)
     private Usuario findUsuarioByEmail(String email) {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com email: " + email));
     }
 
+    @Transactional(readOnly = true)
     private Comentario findComentarioById(Long id) {
         return comentarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comentário não encontrado com o ID: " + id));

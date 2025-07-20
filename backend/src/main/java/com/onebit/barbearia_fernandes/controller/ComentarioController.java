@@ -5,6 +5,7 @@ import com.onebit.barbearia_fernandes.dto.comentario.ComentarioResponseDto;
 import com.onebit.barbearia_fernandes.service.ComentarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
         name = "Comentários",
         description = "Endpoints para gerenciamento de comentários, incluindo criação, listagem e exclusão."
 )
+@SecurityRequirement(name = "bearerAuth")
 public class ComentarioController {
 
     private final ComentarioService comentarioService;
