@@ -7,6 +7,7 @@ import com.onebit.barbearia_fernandes.dto.agendamento.AgendamentoResponseDto;
 import com.onebit.barbearia_fernandes.service.AgendamentoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
         name = "Agendamentos",
         description = "Endpoints para gerenciamento de agendamentos, incluindo criação, listagem, atualização e exclusão."
 )
+@SecurityRequirement(name = "bearerAuth")
 public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
