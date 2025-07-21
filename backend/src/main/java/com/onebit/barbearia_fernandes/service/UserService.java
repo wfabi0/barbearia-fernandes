@@ -2,7 +2,7 @@ package com.onebit.barbearia_fernandes.service;
 
 import com.onebit.barbearia_fernandes.dto.user.CreateUserDto;
 import com.onebit.barbearia_fernandes.dto.user.UpdateUserDto;
-import com.onebit.barbearia_fernandes.dto.user.UserListReponseDto;
+import com.onebit.barbearia_fernandes.dto.user.UserListResponseDto;
 import com.onebit.barbearia_fernandes.dto.user.UserResponseDto;
 import com.onebit.barbearia_fernandes.exception.ResourceNotFoundException;
 import com.onebit.barbearia_fernandes.model.Usuario;
@@ -44,7 +44,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Page<UserListReponseDto> getUsuarios(Pageable pageable) {
+    public Page<UserListResponseDto> getUsuarios(Pageable pageable) {
         Page<Usuario> usuarios = userRepository.findAll(pageable);
         return usuarios.map(this::toResponseListDto);
     }
@@ -118,8 +118,8 @@ public class UserService {
         );
     }
 
-    private UserListReponseDto toResponseListDto(Usuario usuario) {
-        return new UserListReponseDto(
+    private UserListResponseDto toResponseListDto(Usuario usuario) {
+        return new UserListResponseDto(
                 usuario.getUserId(),
                 usuario.getNomeUsuario(),
                 usuario.getEmail(),

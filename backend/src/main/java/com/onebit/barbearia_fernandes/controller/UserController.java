@@ -2,7 +2,7 @@ package com.onebit.barbearia_fernandes.controller;
 
 import com.onebit.barbearia_fernandes.dto.user.CreateUserDto;
 import com.onebit.barbearia_fernandes.dto.user.UpdateUserDto;
-import com.onebit.barbearia_fernandes.dto.user.UserListReponseDto;
+import com.onebit.barbearia_fernandes.dto.user.UserListResponseDto;
 import com.onebit.barbearia_fernandes.dto.user.UserResponseDto;
 import com.onebit.barbearia_fernandes.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -42,10 +41,7 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "Erro de validação nos dados do usuário")
     @ApiResponse(responseCode = "403", description = "Acesso negado para criar usuário")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    public UserResponseDto saveUsuario(
-            @Valid @RequestBody CreateUserDto createUserDto,
-            Authentication authentication
-    ) {
+    public UserResponseDto saveUsuario(@Valid @RequestBody CreateUserDto createUserDto) {
         return userService.saveUsuario(createUserDto);
     }
 
@@ -58,7 +54,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso")
     @ApiResponse(responseCode = "403", description = "Acesso negado para listar usuários")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    public Page<UserListReponseDto> getListaUsuarios(
+    public Page<UserListResponseDto> getListaUsuarios(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "userId") String sortBy,
@@ -85,8 +81,7 @@ public class UserController {
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     public UserResponseDto updateUsuario(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateUserDto updateUserDto,
-            Authentication authentication
+            @Valid @RequestBody UpdateUserDto updateUserDto
     ) {
         return userService.updateUsuario(id, updateUserDto);
     }
@@ -102,10 +97,7 @@ public class UserController {
     @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUsuario(
-            @PathVariable Long id,
-            Authentication authentication
-    ) {
+    public void deleteUsuario(@PathVariable Long id) {
         userService.deleteUsuario(id);
     }
 

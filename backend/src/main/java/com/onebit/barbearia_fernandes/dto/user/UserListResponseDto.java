@@ -2,7 +2,7 @@ package com.onebit.barbearia_fernandes.dto.user;
 
 import com.onebit.barbearia_fernandes.enums.PerfilUsuario;
 
-public record UserListReponseDto(
+public record UserListResponseDto(
         Long id,
         String nome,
         String email,
