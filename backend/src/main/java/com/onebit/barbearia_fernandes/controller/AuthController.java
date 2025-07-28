@@ -32,6 +32,7 @@ public class AuthController {
     @Operation(summary = "Login", description = "Realiza o login do usuário e retorna um token de autenticação.")
     @ApiResponse(responseCode = "200", description = "Login realizado com sucesso, retorna o token de autenticação.")
     @ApiResponse(responseCode = "400", description = "Dados de login inválidos.")
+    @ApiResponse(responseCode = "429", description = "Limite de requisições excedido. Tente novamente mais tarde.")
     @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
     public ResponseEntity<LoginResponseDto> login(
             @Valid @RequestBody LoginRequestDto requestDto,
@@ -42,6 +43,11 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Registro", description = "Registra um novo usuário e retorna os detalhes do registro.")
+    @ApiResponse(responseCode = "200", description = "Registro realizado com sucesso, retorna os detalhes do usuário registrado.")
+    @ApiResponse(responseCode = "400", description = "Dados de registro inválidos.")
+    @ApiResponse(responseCode = "429", description = "Limite de requisições excedido. Tente novamente mais tarde.")
+    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
     public ResponseEntity<RegisterReponseDto> register(
             @Valid @RequestBody RegisterRequestDto requestDto,
             HttpServletRequest request
