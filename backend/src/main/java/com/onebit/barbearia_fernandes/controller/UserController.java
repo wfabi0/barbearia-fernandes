@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -99,6 +100,20 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUsuario(@PathVariable Long id) {
         userService.deleteUsuario(id);
+    }
+
+    @GetMapping("me")
+    @Operation(
+            summary = "Obtém o usuário autenticado",
+            description = "Retorna os dados do usuário autenticado."
+    )
+    @ApiResponse(responseCode = "200", description = "Usuário autenticado retornado com sucesso")
+    @ApiResponse(responseCode = "403", description = "Acesso negado para obter usuário autenticado")
+    @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    public UserResponseDto getUsuarioAutenticado(
+            Authentication authentication
+    ) {
+        return userService.getUsuarioAutenticado(authentication);
     }
 
 }
