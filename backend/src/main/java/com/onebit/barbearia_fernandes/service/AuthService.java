@@ -4,6 +4,7 @@ import com.onebit.barbearia_fernandes.dto.auth.LoginRequestDto;
 import com.onebit.barbearia_fernandes.dto.auth.LoginResponseDto;
 import com.onebit.barbearia_fernandes.dto.auth.RegisterReponseDto;
 import com.onebit.barbearia_fernandes.dto.auth.RegisterRequestDto;
+import com.onebit.barbearia_fernandes.exception.RateLimitExceededException;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
 import io.github.bucket4j.Bucket;
@@ -40,7 +41,7 @@ public class AuthService {
         Bucket bucket = rateLimitingService.resolveLoginBucket(ipAddress);
         if (!bucket.tryConsume(1)) {
             logger.warn("Limite de login excedido para o IP: {}", ipAddress);
-            throw new DataIntegrityViolationException(
+            throw new RateLimitExceededException(
                     "Muitas tentativas de login. Tente novamente em 5 minutos."
             );
         }
@@ -76,7 +77,7 @@ public class AuthService {
         Bucket bucket = rateLimitingService.resolveRegisterBucket(ipAddress);
         if (!bucket.tryConsume(1)) {
             logger.warn("Limite de requisições excedido para o IP: {}", ipAddress);
-            throw new DataIntegrityViolationException("Limite de requisições excedido. Tente novamente mais tarde.");
+            throw new RateLimitExceededException("Limite de requisições excedido. Tente novamente mais tarde.");
         }
 
         if (usuarioRepository.existsByEmail(dto.email())) {
