@@ -1,8 +1,8 @@
 'use client';
 
 import { Geist, Geist_Mono } from "next/font/google";
-import NavBar from '../NavBar/NavBar';
-import Footer from '../Footer/Footer';
+import NavBar from './NavBar';
+import Footer from './Footer';
 import { useState, useEffect } from "react";
 
 const geistSans = Geist({

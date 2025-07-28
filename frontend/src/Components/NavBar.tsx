@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import Logo from '../../../public/logo-barbearia.png';
+import Logo from '../../public/logo-barbearia.png';
 import {  useRef } from 'react';
 
 export default function NavBar() {
