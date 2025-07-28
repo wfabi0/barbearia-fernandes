@@ -102,7 +102,7 @@ public class UserController {
         userService.deleteUsuario(id);
     }
 
-    @GetMapping("me")
+    @GetMapping("/me")
     @Operation(
             summary = "Obtém o usuário autenticado",
             description = "Retorna os dados do usuário autenticado."
