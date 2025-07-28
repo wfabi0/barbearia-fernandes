@@ -41,7 +41,7 @@ public class AuthService {
         if (!bucket.tryConsume(1)) {
             logger.warn("Limite de login excedido para o IP: {}", ipAddress);
             throw new DataIntegrityViolationException(
-                    "Muitas tentativas de login. Tente novamente em " + rateLimitingService.LOGIN_REFILL_DURATION.toMinutes() + " minutos."
+                    "Muitas tentativas de login. Tente novamente em 5 minutos."
             );
         }
 

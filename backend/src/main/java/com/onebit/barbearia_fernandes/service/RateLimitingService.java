@@ -16,11 +16,6 @@ public class RateLimitingService {
     private final Map<String, Bucket> registerCache = new ConcurrentHashMap<>();
     private final Map<String, Bucket> loginCache = new ConcurrentHashMap<>();
 
-    public final int REGISTER_CAPACITY = 3;
-    public final int LOGIN_CAPACITY = 5;
-    public final Duration REGISTER_REFILL_DURATION = Duration.ofMinutes(3);
-    public final Duration LOGIN_REFILL_DURATION = Duration.ofMinutes(5);
-
     public Bucket resolveRegisterBucket(String ipAddress) {
         logger.info("Resolving register bucket for IP: {}", ipAddress);
         return registerCache.computeIfAbsent(ipAddress, this::newRegisterBucket);
@@ -36,8 +31,8 @@ public class RateLimitingService {
         return Bucket.builder()
                 .addLimit(limit ->
                         limit
-                                .capacity(REGISTER_CAPACITY)
-                                .refillGreedy(REGISTER_CAPACITY, REGISTER_REFILL_DURATION)
+                                .capacity(3)
+                                .refillGreedy(3, Duration.ofMinutes(3))
                 )
                 .build();
     }
@@ -47,8 +42,8 @@ public class RateLimitingService {
         return Bucket.builder()
                 .addLimit(limit ->
                         limit
-                                .capacity(LOGIN_CAPACITY)
-                                .refillGreedy(LOGIN_CAPACITY, LOGIN_REFILL_DURATION)
+                                .capacity(5)
+                                .refillGreedy(5, Duration.ofMinutes(5))
                 )
                 .build();
     }
