@@ -6,7 +6,10 @@ import com.onebit.barbearia_fernandes.dto.auth.RegisterReponseDto;
 import com.onebit.barbearia_fernandes.dto.auth.RegisterRequestDto;
 import com.onebit.barbearia_fernandes.model.Usuario;
 import com.onebit.barbearia_fernandes.repository.UsuarioRepository;
+import io.github.bucket4j.Bucket;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,13 +24,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RateLimitingService rateLimitingService;
 
     @Transactional(readOnly = true)
-    public LoginResponseDto login(LoginRequestDto dto) {
+    public LoginResponseDto login(
+            LoginRequestDto dto,
+            String ipAddress
+    ) {
+        Bucket bucket = rateLimitingService.resolveLoginBucket(ipAddress);
+        if (!bucket.tryConsume(1)) {
+            logger.warn("Limite de login excedido para o IP: {}", ipAddress);
+            throw new DataIntegrityViolationException(
+                    "Muitas tentativas de login. Tente novamente em " + rateLimitingService.LOGIN_REFILL_DURATION.toMinutes() + " minutos."
+            );
+        }
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(dto.email(), dto.senha())
@@ -52,7 +69,16 @@ public class AuthService {
     }
 
     @Transactional
-    public RegisterReponseDto register(RegisterRequestDto dto) {
+    public RegisterReponseDto register(
+            RegisterRequestDto dto,
+            String ipAddress
+    ) {
+        Bucket bucket = rateLimitingService.resolveRegisterBucket(ipAddress);
+        if (!bucket.tryConsume(1)) {
+            logger.warn("Limite de requisições excedido para o IP: {}", ipAddress);
+            throw new DataIntegrityViolationException("Limite de requisições excedido. Tente novamente mais tarde.");
+        }
+
         if (usuarioRepository.existsByEmail(dto.email())) {
             throw new DataIntegrityViolationException("E-mail já cadastrado.");
         }
