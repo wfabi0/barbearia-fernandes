@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,6 +80,15 @@ public class UserService {
 
         Usuario usuarioAtualizado = userRepository.save(usuarioExistente);
         return toResponseDto(usuarioAtualizado);
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponseDto getUsuarioAutenticado(
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+        Usuario usuario = getUsuarioByEmail(email);
+        return toResponseDto(usuario);
     }
 
     @Transactional
