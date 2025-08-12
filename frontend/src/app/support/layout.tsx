@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Administrador - Agendamento - Barbearia Fernandes",
+  title: "Entre em contato com o nosso Suporte",
 };
 
 export default function RootLayout({

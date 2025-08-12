@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import api from '../services/api';
 import imgForService from '@/../public/cortes/corte_example.png';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Service {
+  id: number; 
   name: string;
   price: string;
 }
@@ -27,10 +28,14 @@ const ServicesSection: React.FC = () => {
     const fetchServices = async () => {
       try {
         const response = await api.get<ApiCorte[]>('/cortes');
+        console.log("Serviços recebidos:", response.data);
+              
         const formattedServices = response.data.map((corte) => ({
+          id: corte.id,
           name: corte.nomeCorte,
           price: corte.precoFormatted,
         }));
+        
         setServices(formattedServices);
       } catch (err) {
         console.error("Erro ao buscar serviços:", err);
@@ -86,8 +91,8 @@ const ServicesSection: React.FC = () => {
             ref={carouselRef}
             className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
           >
-            {services.map((service, index) => (
-              <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 snap-center p-4">
+            {services.map((service) => (
+              <div key={service.id} className="flex-none w-full sm:w-1/2 lg:w-1/3 snap-center p-4">
                 <div className="bg-white rounded-lg shadow-xl overflow-hidden h-full flex flex-col">
                   <div className="relative w-full h-72">
                     <Image

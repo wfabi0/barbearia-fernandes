@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import React, { useState } from "react";
 import api from "@/services/api";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -18,9 +19,7 @@ const Login: React.FC = () => {
       const token = response.data.token;
 
       localStorage.setItem('jwt_token', token);
-/*
-logica de redirecionamento após login bem-sucedido
-*/
+
       router.push('/');
     } catch (error) {
       Swal.fire({
@@ -35,7 +34,6 @@ logica de redirecionamento após login bem-sucedido
   return (
     <div
       className="min--dvh flex items-center justify-center bg-cover bg-center px-4 sm:px-6 md:px-8 lg:px-10 xl:px-20 py-8"
-      style={{ backgroundImage: "url('/images/background.jpg')" }}
     >
       <div className="bg-white shadow-xl rounded-2xl p-6 sm:p-8 w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl border border-gray-200">
 
@@ -78,7 +76,7 @@ logica de redirecionamento após login bem-sucedido
             </div>
           </div>          
           <div className="text-right">
-            <a href="#" className="text-xs text-blue-500 hover:underline">ESQUECI MINHA SENHA</a>
+            <Link href="/support" className="text-xs text-blue-500 hover:underline">ESQUECI MINHA SENHA</Link>
           </div>          
           <button
             type="submit"
@@ -87,9 +85,8 @@ logica de redirecionamento após login bem-sucedido
             ACESSAR
           </button>
 
-          {/* Criar conta */}
           <div className="text-center mt-2">
-            <a href="#" className="text-xs text-blue-500 hover:underline">CRIE UMA CONTA</a>
+            <Link href="/cadastre" className="text-xs text-blue-500 hover:underline">CRIE UMA CONTA</Link>
           </div>
         </form>
       </div>

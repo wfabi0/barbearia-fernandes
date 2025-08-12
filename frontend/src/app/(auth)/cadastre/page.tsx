@@ -2,7 +2,7 @@
 
 import Swal from "sweetalert2";
 import React, { useState, useEffect } from 'react';
-import { API_PATH } from '@/constants/constants';
+import api from '@/services/api'
 
 type PasswordValidationResult = {
     isValid: boolean;
@@ -95,17 +95,10 @@ const RegisterForm: React.FC = () => {
 
         try {
             const payload = { nome: name, email, telefone: phone, senha: password };
-
-            const response = await fetch(API_PATH + '/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.message || 'Falha no cadastro. Tente novamente.');
+            const response = await api.post('/auth/register', payload); 
+            
+             if (response.status !== 200 && response.status !== 201) {
+                 throw new Error('Falha no cadastro. Tente novamente.');
             }
 
             Swal.fire({
@@ -171,7 +164,7 @@ const RegisterForm: React.FC = () => {
                             <div className="relative mt-1 flex items-center w-full">
                                 <input className="grow border-0 border-black p-2 focus:outline-none" type={showPassword ? 'text' : 'password'} id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Digite sua senha" required />
                                 <button className="flex-none absolute right-1 w-auto" type="button" onClick={() => setShowPassword(!showPassword)}>
-                                    {showConfirmPassword ? "🙈" : "👁️"}
+                                    {showPassword ? "🙈" : "👁️"}
                                 </button>
                             </div>
                         </div>

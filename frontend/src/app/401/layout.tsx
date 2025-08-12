@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Administrador - Cadastro - Barbearia Fernandes",
+  title: "Acesso Negado - Barbearia Fernandes",
 };
 
 export default function RootLayout({
